@@ -9,11 +9,16 @@
 </head>
 
 <body>
-    <button onclick="startFlow()">startFlow</button>
-    <script src="./promise.js"></script>
-    <script src="./workflow.js"></script>
+    <div id="applicationHost"></div>
+    <!-- <button onclick="startFlow()">startFlow</button> -->
+    <script src="./common/promise.js"></script>
+    <script src="./common/workflow.js"></script>
+    <script src="./common/knockout.js"></script>
+    <script src="./common/jquery-3.2.1.min.js"></script>
+    <script src="./common/require.js" data-main="./app/main">
+    </script>
     <!-- <script src="./alertActivity.js"></script> -->
-    <script>
+    <!-- <script>
         function startFlow() {
             var flowchart = {
                 $inputs: [],
@@ -61,7 +66,7 @@
                 alert("workflowjs completed");
             })
         }
-    </script>
+    </script> -->
 </body>
 
 </html>

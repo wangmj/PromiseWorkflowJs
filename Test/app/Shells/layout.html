@@ -1,0 +1,8 @@
+<div>
+    <h1>WorkflowJs Test</h1>
+    <ul data-bind="foreach:workflows">
+        <li data-bind="click:$parent.startFlow.bind($parent,flowid)">
+            <a data-bind="text:title" href="#"></a>
+        </li>
+    </ul>
+</div>
