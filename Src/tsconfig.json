@@ -3,7 +3,7 @@
         "removeComments": true,
         "allowJs": true,
         "module": "system",
-        "outFile": "./release/workflow.js",
+        "outFile": "../Test/workflow.js",
         "lib": [
             "es2015"
         ]
