@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "removeComments": true,
+        "allowJs": true,
+        "module": "system",
+        "outFile": "./release/workflow.js",
+        "lib": [
+            "es2015"
+        ]
+    },
+    "include": [
+        "./*.ts",
+        "./bll/*.ts",
+        "./Activities/*.ts",
+        "./Helpers/*.ts",
+        "./Models/*.ts"
+    ]
+}
