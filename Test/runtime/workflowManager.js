@@ -22,6 +22,7 @@ define(["jsRuntime/utility"], function(utility) {
             getFlowchart(flowid).then(function(flowchart) {
                 if (flowchart instanceof Function)
                     flowchart = flowchart();
+                wfjs.Logger.SetLogger(console);
                 wfjs.FlowchartInvoker.Createflowchart(flowchart).Invoke(function() {
                     utility.log("workflowjs completed");
                 });

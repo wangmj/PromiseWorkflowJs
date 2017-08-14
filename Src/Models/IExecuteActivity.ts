@@ -7,7 +7,7 @@ module wfjs {
         //执行
         Execute(context: ActivityContext): Promise<void>;
         //中断
-        Terminate(): void;
+        Terminate(): boolean;
         next: string;
     }
 }

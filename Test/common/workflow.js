@@ -10,6 +10,13 @@ var wfjs;
     var ActivityContext = (function () {
         function ActivityContext() {
         }
+        ActivityContext.prototype.log = function (type) {
+            var msg = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                msg[_i - 1] = arguments[_i];
+            }
+            wfjs.Logger.log(type, msg);
+        };
         return ActivityContext;
     }());
     wfjs.ActivityContext = ActivityContext;
@@ -35,9 +42,13 @@ var wfjs;
         };
         FlowchartInvoker.prototype.ExecuteChart = function (actName) {
             var act = this.flowchart.activities[actName];
-            if (act == null)
+            if (act == null) {
+                this.context.log("warn", "workflow first activity is null,workflow completed!");
                 return;
+            }
             else {
+                this.context.runningActName = actName;
+                this.context.runningAct = act;
                 this._executeAct(act);
             }
         };
@@ -48,16 +59,27 @@ var wfjs;
                 _this.context.inputs = inputs;
                 return;
             }).then(function () {
+                _this.context.runningAct = activity;
+            }).then(function () {
+                _this.context.log("info", _this.context.runningActName, " started. ", _this.context);
+            }).then(function () {
                 activity.activity.Execute(_this.context);
+            }).then(function () {
+                _this.context.log("info", _this.context.runningActName, " finished. ", _this.context);
             }).then(function () {
                 return wfjs.bll.workflow.GetNextActivityName(_this.context, activity);
             }).then(function (actname) {
+                _this.context.runningActName = actname;
                 return _this.flowchart.activities[actname];
             }).then(function (act) {
-                if (act == null)
+                if (act == null) {
+                    _this.context.log("info", "workflow completed!");
                     return;
+                }
                 else
                     return _this._executeAct(act);
+            })["catch"](function (err) {
+                _this.context.log("error", err);
             });
         };
         return FlowchartInvoker;
@@ -78,13 +100,20 @@ var wfjs;
                 message[_i - 1] = arguments[_i];
             }
             var logger = Logger.getlogger();
+            if (logger == null)
+                return;
             var msg = Logger.composeMsg(message);
             switch (level) {
                 case "error":
-                    logger.error(msg);
-                case "":
+                    logger.error.apply(logger, msg);
+                    break;
+                case "warn":
+                    logger.warn.apply(logger, msg);
+                    break;
+                default:
+                    logger.log.apply(logger, msg);
+                    break;
             }
-            logger.log();
         };
         Logger.getlogger = function () {
             if (Logger._logger)
@@ -101,9 +130,9 @@ var wfjs;
             msg.unshift((new Date()).toLocaleString());
             msg.unshift("workflowjs");
             msg.forEach(function (m) {
-                res += m;
+                res += m + " ";
             });
-            return res;
+            return msg;
         };
         return Logger;
     }());
@@ -127,7 +156,7 @@ var wfjs;
                 var result = {};
                 keys = keys || [];
                 if (keys == "*")
-                    return values;
+                    return values || {};
                 else if (Array.isArray(keys)) {
                     keys.forEach(function (key) {
                         if (key in values) {
@@ -161,26 +190,75 @@ var wfjs;
         function AssignActivity() {
         }
         AssignActivity.prototype.Terminate = function () {
-            throw new Error("Method not implemented.");
+            return true;
         };
         AssignActivity.prototype.Execute = function (context) {
-            return new Promise(function (resolve, reject) {
-                Object.keys(context.inputs.values).forEach(function (key) {
-                    var v = context.inputs.values[key];
-                    var values = {};
-                    wfjs.Helpers.ObjectHelpers.CombineObj(values, context.inputs, context.globals);
-                    if (key in context.globals)
-                        context.globals[key] = wfjs.Helpers.EvalHelper.EvalWithContext(values, v);
-                    else {
-                        wfjs.Helpers.EvalHelper.EvalWithContext(values, v);
-                    }
-                });
-                resolve();
+            Object.keys(context.inputs.values).forEach(function (key) {
+                var v = context.inputs.values[key];
+                var values = {};
+                wfjs.Helpers.ObjectHelpers.CombineObj(values, context.inputs, context.globals);
+                if (key in context.globals)
+                    context.globals[key] = wfjs.Helpers.EvalHelper.EvalWithContext(values, v);
+                else {
+                    wfjs.Helpers.EvalHelper.EvalWithContext(values, v);
+                }
             });
+            return Promise.resolve();
         };
         return AssignActivity;
     }());
     wfjs.AssignActivity = AssignActivity;
+})(wfjs || (wfjs = {}));
+var wfjs;
+(function (wfjs) {
+    var DecisionActivity = (function () {
+        function DecisionActivity() {
+        }
+        DecisionActivity.prototype.Execute = function (context) {
+            var opt = {
+                condition: "",
+                "true": "",
+                "false": ""
+            };
+            var optInputs = wfjs.GetInputsFromContextByOpt(context, opt);
+            var allValues = wfjs.Helpers.ObjectHelpers.CombineObjAsync(context.inputs, context.globals);
+            var result = wfjs.Helpers.EvalHelper.EvalWithContext(allValues, optInputs.condition);
+            context.outputs["$next"] = result == true ? optInputs["true"] : optInputs["false"];
+            return Promise.resolve();
+        };
+        DecisionActivity.prototype.Terminate = function () {
+            return true;
+        };
+        return DecisionActivity;
+    }());
+    wfjs.DecisionActivity = DecisionActivity;
+})(wfjs || (wfjs = {}));
+var wfjs;
+(function (wfjs) {
+    var SwitchActivity = (function () {
+        function SwitchActivity() {
+        }
+        SwitchActivity.prototype.Execute = function (context) {
+            var opt = {
+                condition: "",
+                cases: {}
+            };
+            var optInputs = wfjs.GetInputsFromContextByOpt(context, opt);
+            var allValues = wfjs.Helpers.ObjectHelpers.CombineObjAsync(context.inputs, context.globals);
+            var result = wfjs.Helpers.EvalHelper.EvalWithContext(allValues, context.inputs.condition);
+            Object.keys(optInputs.cases).forEach(function (item) {
+                if (item == result) {
+                    context.outputs["$next"] = optInputs.cases[item];
+                }
+            });
+            return Promise.resolve();
+        };
+        SwitchActivity.prototype.Terminate = function () {
+            throw new Error("Method not implemented.");
+        };
+        return SwitchActivity;
+    }());
+    wfjs.SwitchActivity = SwitchActivity;
 })(wfjs || (wfjs = {}));
 var wfjs;
 (function (wfjs) {
@@ -236,4 +314,21 @@ var wfjs;
         }());
         Helpers.ObjectHelpers = ObjectHelpers;
     })(Helpers = wfjs.Helpers || (wfjs.Helpers = {}));
+})(wfjs || (wfjs = {}));
+var wfjs;
+(function (wfjs) {
+    function GetInputsFromContextByOpt(context, opt) {
+        var inputs = context.inputs;
+        var globals = context.globals;
+        var result = {};
+        Object.keys(opt).forEach(function (key) {
+            if (key in globals)
+                result[key] = globals[key];
+            else if (key in inputs)
+                result[key] = inputs[key];
+            else
+                result[key] = opt[key];
+        });
+    }
+    wfjs.GetInputsFromContextByOpt = GetInputsFromContextByOpt;
 })(wfjs || (wfjs = {}));

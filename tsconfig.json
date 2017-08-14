@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "removeComments": true,
+        "allowJs": true,
+        "module": "system",
+        "outFile": "./Test/Common/workflow.js",
+        "lib": [
+            "es2015.promise", "es2015"
+        ]
+    },
+    "include": [
+        "./Src/*.ts",
+        "./Src/bll/*.ts",
+        "./Src/Activities/*.ts",
+        "./Src/Helpers/*.ts",
+        "./Src/Models/*.ts",
+        "./Src/exports/*.ts",
+        "./Src/*/*.ts"
+    ]
+}

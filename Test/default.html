@@ -10,63 +10,12 @@
 
 <body>
     <div id="applicationHost"></div>
-    <!-- <button onclick="startFlow()">startFlow</button> -->
     <script src="./common/promise.js"></script>
     <script src="./common/workflow.js"></script>
     <script src="./common/knockout.js"></script>
     <script src="./common/jquery-3.2.1.min.js"></script>
-    <script src="./common/require.js" data-main="./app/main">
-    </script>
-    <!-- <script src="./alertActivity.js"></script> -->
-    <!-- <script>
-        function startFlow() {
-            var flowchart = {
-                $inputs: [],
-                $outputs: [],
-                $globals: {
-                    "a": 1
-                },
-                activities: {
-                    "assignTest": wfjs.Activity({
-                        activity: new wfjs.AssignActivity(),
-                        $inputs: {
-                            values: {
-                                "a": "this.a+1"
-                            }
-                        },
-                        next: "assignTest2"
-                    }),
-                    "assignTest2": wfjs.Activity({
-                        activity: new wfjs.AssignActivity(),
-                        $inputs: {
-                            values: {
-                                "a": "this.a+1"
-                            }
-                        },
-                        next: "assignTest3"
-                    }),
-                    "assignTest3": wfjs.Activity({
-                        activity: new wfjs.AssignActivity(),
-                        $inputs: {
-                            values: {
-                                "a": "this.a+1"
-                            }
-                        },
-                        next: "alertTest4"
-                    }),
-                    // "alertTest": wfjs.Activity({
-                    //     activity: new alertActivity(),
-                    //     $inputs: {
-                    //         msg: "'aaaa'"
-                    //     }
-                    // })
-                }
-            }
-            wfjs.FlowchartInvoker.Createflowchart(flowchart).Invoke(function() {
-                alert("workflowjs completed");
-            })
-        }
-    </script> -->
+    <script src="./common/require.js" data-main="./app/main"></script>
+
 </body>
 
 </html>

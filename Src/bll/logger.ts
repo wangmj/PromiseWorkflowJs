@@ -6,28 +6,43 @@ module wfjs {
         }
         public static log(level: string, ...message: any[]): void {
             var logger = Logger.getlogger();
+            if (logger == null) return;
             var msg = Logger.composeMsg(message);
             switch (level) {
                 case "error":
-                    logger.error(msg);
-                case "":
+                    logger.error.apply(logger,msg);
+                    break;
+                case "warn":
+                    logger.warn.apply(logger,msg);
+                    break;
+                default:
+                    logger.log.apply(logger,msg);
+                    break;
             }
-            logger.log()
         }
-        private static getlogger() {
+        private static getlogger(): ILogger {
             if (Logger._logger)
                 return Logger._logger;
             else
                 return null;
         }
-        private static composeMsg(...msg: any[]): string {
+        private static composeMsg(...msg: any[]): Array<any> {
             var res = "";
             msg.unshift((new Date()).toLocaleString());
             msg.unshift("workflowjs");
             msg.forEach((m) => {
-                res += m;
+                // if (typeof m == "object")
+                //     res += JSON.stringify(m) + " ";
+                // else
+                res += m + " ";
             });
-            return res;
+            return msg;
         }
+    }
+    interface ILogger {
+        error(msg: string): void;
+        error(error: Error): void;
+        warn(msg: string): void;
+        log(msg: string): void;
     }
 }

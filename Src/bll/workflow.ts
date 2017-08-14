@@ -16,7 +16,7 @@ module wfjs.bll {
             var result = {};
             keys = keys || [];
             if (keys == "*")
-                return values;
+                return values || {};
             else if (Array.isArray(keys)) {
                 (<Array<string>>keys).forEach((key) => {
                     if (key in values) {
@@ -35,8 +35,8 @@ module wfjs.bll {
         public static GetNextActivityName(context: ActivityContext, act: IActivity): string {
             return context.outputs["$next"] || act.next || "";
         }
-        public static ClearContextInputs(context:ActivityContext){
-            context.inputs={};
+        public static ClearContextInputs(context: ActivityContext) {
+            context.inputs = {};
         }
     }
 }
