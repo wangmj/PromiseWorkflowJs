@@ -9,8 +9,7 @@ requirejs.config({
         "flowchart": "/flowchart"
     }
 });
-// define("knockout", ko);
-define("vue", Vue);
+define("vue", function() { return Vue; });
 require(["jsRuntime/composition"], function(composition) {
     composition.compose("app/Shells/layout", "app/Shells/layout", document.getElementById("applicationHost"))
 });

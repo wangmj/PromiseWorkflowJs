@@ -1,4 +1,4 @@
-define(['runtime/viewManager'], function(vm) {
+define(['jsRuntime/viewManager'], function(vm) {
     var act = function() {
         this.inputs = ["page"];
         this.outputs = [];
