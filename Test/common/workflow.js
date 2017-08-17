@@ -63,7 +63,12 @@ var wfjs;
             }).then(function () {
                 _this.context.log("info", _this.context.runningActName, " started. ", _this.context);
             }).then(function () {
-                activity.activity.Execute(_this.context);
+                try {
+                    return activity.activity.Execute(_this.context);
+                }
+                catch (e) {
+                    return Promise.reject(e);
+                }
             }).then(function () {
                 _this.context.log("info", _this.context.runningActName, " finished. ", _this.context);
             }).then(function () {
@@ -79,7 +84,7 @@ var wfjs;
                 else
                     return _this._executeAct(act);
             })["catch"](function (err) {
-                _this.context.log("error", err);
+                return _this.context.log("error", err);
             });
         };
         return FlowchartInvoker;
@@ -126,12 +131,9 @@ var wfjs;
             for (var _i = 0; _i < arguments.length; _i++) {
                 msg[_i] = arguments[_i];
             }
-            var res = "";
+            msg = msg;
             msg.unshift((new Date()).toLocaleString());
             msg.unshift("workflowjs");
-            msg.forEach(function (m) {
-                res += m + " ";
-            });
             return msg;
         };
         return Logger;
@@ -329,6 +331,7 @@ var wfjs;
             else
                 result[key] = opt[key];
         });
+        return result;
     }
     wfjs.GetInputsFromContextByOpt = GetInputsFromContextByOpt;
 })(wfjs || (wfjs = {}));

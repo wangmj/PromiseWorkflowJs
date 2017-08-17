@@ -41,9 +41,13 @@ module wfjs {
                 }).then(() => {
                     this.context.log("info", this.context.runningActName, " started. ", this.context);
                 }).then(() => {
-                    activity.activity.Execute(this.context)
+                    try {
+                        return activity.activity.Execute(this.context);
+                    } catch (e) {
+                        return Promise.reject(e);
+                    }
                 }).then(() => {
-                    this.context.log("info", this.context.runningActName , " finished. " , this.context);
+                    this.context.log("info", this.context.runningActName, " finished. ", this.context);
                 }).then(() => {
                     return bll.workflow.GetNextActivityName(this.context, activity);
                 }).then((actname: string) => {
@@ -57,7 +61,7 @@ module wfjs {
                     else
                         return this._executeAct(act);
                 }).catch((err) => {
-                    this.context.log("error", err);
+                    return this.context.log("error", err);
                 });
         }
 

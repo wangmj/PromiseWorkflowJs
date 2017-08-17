@@ -1,5 +1,5 @@
 module wfjs {
-    export function GetInputsFromContextByOpt(context: ActivityContext, opt: Dictionary<any>):any {
+    export function GetInputsFromContextByOpt(context: ActivityContext, opt: Dictionary<any>): any {
         var inputs = context.inputs;
         var globals = context.globals;
         var result = {};
@@ -11,5 +11,6 @@ module wfjs {
             else
                 result[key] = opt[key];
         })
+        return result;
     }
 }

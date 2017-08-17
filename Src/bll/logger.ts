@@ -10,13 +10,13 @@ module wfjs {
             var msg = Logger.composeMsg(message);
             switch (level) {
                 case "error":
-                    logger.error.apply(logger,msg);
+                    logger.error.apply(logger, msg);
                     break;
                 case "warn":
-                    logger.warn.apply(logger,msg);
+                    logger.warn.apply(logger, msg);
                     break;
                 default:
-                    logger.log.apply(logger,msg);
+                    logger.log.apply(logger, msg);
                     break;
             }
         }
@@ -27,15 +27,9 @@ module wfjs {
                 return null;
         }
         private static composeMsg(...msg: any[]): Array<any> {
-            var res = "";
+            msg = msg as Array<any>;
             msg.unshift((new Date()).toLocaleString());
             msg.unshift("workflowjs");
-            msg.forEach((m) => {
-                // if (typeof m == "object")
-                //     res += JSON.stringify(m) + " ";
-                // else
-                res += m + " ";
-            });
             return msg;
         }
     }

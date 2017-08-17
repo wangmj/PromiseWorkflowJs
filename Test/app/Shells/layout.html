@@ -1,8 +1,11 @@
 <div>
     <h1>WorkflowJs Test</h1>
-    <ul data-bind="foreach:workflows">
-        <li data-bind="click:$parent.startFlow.bind($parent,flowid)">
-            <a data-bind="text:title" href="#"></a>
-        </li>
+    <ul>
+        <template v-for="wf in workflows">
+                <li @click="startFlow(wf.flowid)">
+                        <a  href="#">{{wf.title}}</a>
+                    </li>
+        </template>
+
     </ul>
 </div>
