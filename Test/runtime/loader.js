@@ -6,21 +6,19 @@ define(function() {
             viewUrl += ".html";
 
         var args = ["text!" + viewUrl];
-        return new Promise(function(resolve, reject) {
-            require(args, function(ret) {
-                resolve(ret);
-            }, function(err) {
-                reject(err);
-            });
-        });
+        return acquire("text!" + viewUrl);
     }
 
     function loadMoudle(moduleUrl) {
         if (typeof moduleUrl != "string") {
             throw new Error("loadMoudle argument moduleUrl must be a string");
         }
+        return acquire(moduleUrl);
+    }
+
+    function acquire(path) {
         return new Promise(function(resolve, reject) {
-            require([moduleUrl], function(ret) {
+            require([path], function(ret) {
                 resolve(ret);
             }, function(err) {
                 reject(err);

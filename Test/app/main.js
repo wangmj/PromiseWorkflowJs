@@ -10,6 +10,22 @@ requirejs.config({
     }
 });
 define("vue", function() { return Vue; });
-require(["jsRuntime/composition"], function(composition) {
-    composition.compose("app/Shells/layout", "app/Shells/layout", document.getElementById("applicationHost"))
+require(["jsRuntime/viewManager", 'jsRuntime/loader', 'jsRuntime/composition'], function(vm, loader, composition) {
+    var page = "app/Shells/layout",
+        module = "app/Shells/layout",
+        element = document.getElementById("applicationHost");
+    // vm.showPage(page, element);
+    loader.loadView(page)
+        .then(function(v) {
+            view = v;
+        }).then(function() {
+            return loader.loadMoudle(module);
+        }).then(function(m) {
+            model = m;
+        }).then(function() {
+            vm.layoutModel = model;
+            composition.compose(view, model, element);
+        }).catch(function(err) {
+            console.error(err);
+        });
 });
